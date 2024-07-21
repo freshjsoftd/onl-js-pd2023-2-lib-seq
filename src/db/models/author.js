@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Author.belongsTo(models.Nationality, {foreignKey: 'nationality_id'});
+      Author.belongsToMany(models.Book, {
+        through: models.authors_books,
+      })
     }
   }
   Author.init(
@@ -36,7 +40,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Author',
-      tableName: 'authors'
+      tableName: 'authors',
+      underscored: true,
     }
   );
   return Author;

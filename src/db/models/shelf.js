@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Shelf.hasMany(models.Book, {
+        foreignKey: 'shelf_id',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      })
     }
   }
   Shelf.init(
@@ -30,7 +35,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Shelf',
-      tabelName: 'shelves',
+      tableName: 'shelves',
+      underscored: true,
     }
   );
   return Shelf;

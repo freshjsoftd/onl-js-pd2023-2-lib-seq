@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Book.belongsTo(models.Genre, {foreignKey: 'genre_id'});
       Book.belongsTo(models.Shelf, {foreignKey: 'shelf_id'});
+      Book.belongsToMany(models.Author, {
+        through: models.authors_books,
+      })
     }
   }
   Book.init(
@@ -43,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'Book',
       tableName: 'books',
+      underscored: true,
     }
   );
   return Book;

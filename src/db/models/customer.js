@@ -10,6 +10,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Customer.hasMany(models.Order, {
+        foreignKey: 'customer_id',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      })
     }
   }
   Customer.init(
@@ -42,7 +47,8 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Customer',
-      tabelName: 'customers',
+      tableName: 'customers',
+      underscored: true,
     }
   );
   return Customer;
