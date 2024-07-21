@@ -36,8 +36,7 @@ const syncModels = async () => {
   }
 }
 
-// syncModels();
-console.log(db.authors_books.name)
+syncModels();
 
 const syncModel = async (model) => {
   try {

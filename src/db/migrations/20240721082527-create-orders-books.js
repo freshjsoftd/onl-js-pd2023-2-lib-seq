@@ -2,17 +2,17 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('authors_books', {
+    await queryInterface.createTable('orders_books', {
       // id: {
       //   allowNull: false,
       //   autoIncrement: true,
       //   primaryKey: true,
       //   type: Sequelize.INTEGER
       // },
-      author_id: {
+      order_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'authors',
+          model: 'orders',
           key: 'id',
         }
       },
@@ -24,7 +24,7 @@ module.exports = {
         }
       },
       // created_at: {
-      //   allowNull: true,
+      //   allowNull: false,
       //   type: Sequelize.DATE
       // },
       // updated_at: {
@@ -34,6 +34,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('authors_books');
+    await queryInterface.dropTable('orders_books');
   }
 };
