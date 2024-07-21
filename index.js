@@ -8,7 +8,6 @@ const app = require('./src/app');
 
 // Create server with HTTP module
 const HOST_NAME = process.env.DB_HOST;
-
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
@@ -27,25 +26,25 @@ const dbCheck = async () => {
 
 dbCheck();
 
-const syncModels = async () => {
+/* const syncModels = async () => {
   try {
     await db.sequelize.sync({alter: true})
     console.log(`Sync of models has been done successfully`)
   } catch (error) {
     console.log(`Can't sync models: `, error.message);
   }
-}
+} */
 
-syncModels();
+// syncModels();
 
-const syncModel = async (model) => {
+/* const syncModel = async (model) => {
   try {
     await model.sync({alter: true})
     console.log(`Sync of ${model.name} has been done successfully`)
   } catch (error) {
     console.log(`Can't sync ${model.name}: `, error.message);
   }
-}
+} */
 
 // syncModel(db.authors_books);
 

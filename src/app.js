@@ -12,15 +12,15 @@ const router = require('./routers');
 const app = express();
 
 app.use(cors());
+app.use(express.json());
 
 app.use(express.static(path.resolve('public')));
-app.use(express.json());
 
 // ============================
 //  Library APP
 // ============================
+app.use('/api', router);
 app.use(validationErrorHandler, errorHandler);
 
-app.use('/api', router);
 
 module.exports = app;
