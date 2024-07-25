@@ -26,27 +26,28 @@ const dbCheck = async () => {
 
 dbCheck();
 
-/* const syncModels = async () => {
+const syncModels = async () => {
   try {
     await db.sequelize.sync({alter: true})
     console.log(`Sync of models has been done successfully`)
   } catch (error) {
     console.log(`Can't sync models: `, error.message);
   }
-} */
+}
 
 // syncModels();
 
-/* const syncModel = async (model) => {
+const syncModel = async (model) => {
   try {
     await model.sync({alter: true})
     console.log(`Sync of ${model.name} has been done successfully`)
   } catch (error) {
     console.log(`Can't sync ${model.name}: `, error.message);
   }
-} */
+  console.log(db.AuthorsBooks);
+}
 
-// syncModel(db.authors_books);
+syncModel(db.AuthorsBooks);
 
 server.listen(PORT, HOST_NAME, () =>
   console.log(`Server running at http://${HOST_NAME}:${PORT}`)

@@ -20,9 +20,9 @@ const AUTHOR_VALIDATION_SCHEMA = yup.object().shape({
 
 const CUSTOMER_VALIDATION_SCHEMA = yup.object().shape({
   full_name: yup.string().trim().min(2).max(30).required(),
-  email: EMAIL_SCHEMA,
-  phone: yup.string().nullable(),
-  password: yup.string().required(),
+  // email: EMAIL_SCHEMA,
+  // phone: yup.string().nullable(),
+  // password: yup.string().required(),
 });
 
 const NEW_BOOK_VALIDATION_SCHEMA = yup.object().shape({

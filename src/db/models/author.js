@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Author.belongsTo(models.Nationality, {foreignKey: 'nationality_id'});
       Author.belongsToMany(models.Book, {
-        through: models.AuthorsBooks,
-      })
+			through: models.AuthorsBooks,
+		});
     }
   }
   Author.init(
