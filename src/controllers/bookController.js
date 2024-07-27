@@ -83,6 +83,7 @@ class BookController {
 	}
 
 	async createBook(req, res, next) {
+		const t = await sequelize.transaction();
 		try {
 			const body = req.body;
 			/* const newBook = await db.query(
@@ -93,6 +94,7 @@ class BookController {
 			); */
 			const newBook = await Book.create(body, {
 				returning: ['id'],
+				transaction: t,
 			})
 
 			if (newBook) {
@@ -102,8 +104,10 @@ class BookController {
 				console.log('Bad request');
 				next(createError(400, 'Bad request'));
 			}
+			await t.commit();
 		} catch (error) {
-			console.log(error.message);
+			console.log('Error is', error.message);
+			await t.rollback();
 			next(error);
 		}
 	}
