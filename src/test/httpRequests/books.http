@@ -14,8 +14,8 @@ content-type: application/json
 
 {
   "title": "Test book",
-  "genre": "Western",
-  "shelves": "Shelf #8",
+  "genre_id": 2,
+  "shelf_id": 4,
   "description": "New test book",
   "image": null
 }

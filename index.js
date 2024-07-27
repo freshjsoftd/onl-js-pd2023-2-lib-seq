@@ -44,10 +44,12 @@ const syncModel = async (model) => {
   } catch (error) {
     console.log(`Can't sync ${model.name}: `, error.message);
   }
-  console.log(db.AuthorsBooks);
+  // console.log(db.AuthorsBooks);
 }
 
-syncModel(db.AuthorsBooks);
+// syncModel(db.Book);
+
+// console.log(Object.keys(db.Book.prototype))
 
 server.listen(PORT, HOST_NAME, () =>
   console.log(`Server running at http://${HOST_NAME}:${PORT}`)

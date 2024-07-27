@@ -45,12 +45,12 @@ class BookController {
 		}
 	}
 
-	async getBookById(req, res) {
+	async getBookById(req, res, next) {
 		try {
 			const {
 				params: { bookId },
 			} = req;
-			const book = await db.query(
+			/* const book = await db.query(
 				`SELECT books.id, books.title, gen.title as genre, shelf.title as shelves, books.description, to_char(books."createdAt"::timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "createdAt", to_char(books."updatedAt"::timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "updatedAt", image
         FROM books 
         JOIN genres as gen
@@ -59,37 +59,52 @@ class BookController {
         ON books.shelf_id = shelf.id
         WHERE books.id = $1`,
 				[bookId]
-			);
+			); */
+			const bookById = await Book.findByPk(bookId, {
+				attributes: {
+					exclude: ['createdAt', 'updatedAt']
+				},
+				raw: true,
+			});
 
-			if (book.rows.length > 0) {
-				res.status(200).json(book.rows[0]);
+			if (bookById) {
+				console.log(`Result is: ${JSON.stringify(bookById, null, 2)}`);
+				res.status(200).json(bookById);
 			} else {
-				res.status(404).send('Book not found');
+				console.log('Book not found');
+				next(createError(404, 'Book not found'));
+				// res.status(404).send('Book not found');
 			}
 		} catch (error) {
-			console.log(error);
-			res.status(500).json({ error: 'Internal server error' });
+			console.log(error.message);
+			next(error)
+			// res.status(500).json({ error: 'Internal server error' });
 		}
 	}
 
-	async createBook(req, res) {
+	async createBook(req, res, next) {
 		try {
-			const { title, genre, shelves, description, image } = req.body;
-			const newBook = await db.query(
+			const body = req.body;
+			/* const newBook = await db.query(
 				`INSERT INTO books (title, genre_id, shelf_id, description, "createdAt", "updatedAt", image)
         VALUES ($1, (SELECT id FROM genres WHERE title = $2), (SELECT id FROM shelves WHERE title = $3), $4, NOW(), NOW(), $5)
         RETURNING *;`,
 				[title, genre, shelves, description, image]
-			);
+			); */
+			const newBook = await Book.create(body, {
+				returning: ['id'],
+			})
 
-			if (newBook.rows.length > 0) {
-				res.status(201).json(newBook.rows[0]);
+			if (newBook) {
+				console.log(`Result is : ${JSON.stringify(newBook, null, 2)}`)
+				res.status(201).json(newBook);
 			} else {
-				res.status(404).send('The book has not been created');
+				console.log('Bad request');
+				next(createError(400, 'Bad request'));
 			}
 		} catch (error) {
-			console.log(error);
-			res.status(500).json({ error: 'Internal server error' });
+			console.log(error.message);
+			next(error);
 		}
 	}
 

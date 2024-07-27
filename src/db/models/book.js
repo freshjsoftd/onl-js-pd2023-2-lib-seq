@@ -20,37 +20,37 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Book.init(
-    {
-      title: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      genre_id: {
-        type: DataTypes.INTEGER,
-        // allowNull: false,
-      },
-      shelf_id: {
-        type: DataTypes.INTEGER,
-        // allowNull: false,
-      },
-      description: DataTypes.TEXT,
-      image: DataTypes.STRING,
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-    },
-    {
-      sequelize,
-      modelName: 'Book',
-      tableName: 'books',
-      underscored: true,
-    }
+		{
+			title: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				unique: true,
+			},
+			genre_id: {
+				type: DataTypes.INTEGER,
+				// allowNull: false,
+			},
+			shelf_id: {
+				type: DataTypes.INTEGER,
+				// allowNull: false,
+			},
+			description: DataTypes.TEXT,
+			image: DataTypes.STRING,
+			created_at: {
+				type: DataTypes.DATE,
+				// allowNull: true,
+			},
+			updated_at: {
+				type: DataTypes.DATE,
+				// allowNull: true,
+			},
+		},
+		{
+			sequelize,
+			modelName: 'Book',
+			tableName: 'books',
+			underscored: true,
+		}
   );
   return Book;
 };
