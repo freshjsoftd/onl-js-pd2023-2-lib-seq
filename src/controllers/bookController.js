@@ -1,18 +1,10 @@
 const createError = require('http-errors');
 const { Book, Genre, Shelf, sequelize } = require('../db/models');
+const { where } = require('sequelize');
 
 class BookController {
 	async getBooks(req, res, next) {
 		try {
-			/* const books = await db.query(
-        `SELECT books.id, books.title, gen.title as genre, shelf.title as shelves, books.description, to_char(books."createdAt"::timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "createdAt", to_char(books."updatedAt"::timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "updatedAt", image
-        FROM books 
-        JOIN genres as gen
-        ON books.genre_id = gen.id
-        JOIN shelves as shelf
-        ON books.shelf_id = shelf.id
-        ORDER BY books.id;;`
-      ); */
 			const { limit, offset } = req.pagination;
 			const books = await Book.findAll({
 				attributes: ['id', 'title'],
@@ -62,7 +54,7 @@ class BookController {
 			); */
 			const bookById = await Book.findByPk(bookId, {
 				attributes: {
-					exclude: ['createdAt', 'updatedAt']
+					exclude: ['createdAt', 'updatedAt'],
 				},
 				raw: true,
 			});
@@ -77,7 +69,7 @@ class BookController {
 			}
 		} catch (error) {
 			console.log(error.message);
-			next(error)
+			next(error);
 			// res.status(500).json({ error: 'Internal server error' });
 		}
 	}
@@ -95,10 +87,10 @@ class BookController {
 			const newBook = await Book.create(body, {
 				returning: ['id'],
 				transaction: t,
-			})
+			});
 
 			if (newBook) {
-				console.log(`Result is : ${JSON.stringify(newBook, null, 2)}`)
+				console.log(`Result is : ${JSON.stringify(newBook, null, 2)}`);
 				res.status(201).json(newBook);
 			} else {
 				console.log('Bad request');
@@ -150,6 +142,45 @@ class BookController {
 		} catch (error) {
 			console.log(error);
 			res.status(500).json({ error: 'Internal server error' });
+		}
+	}
+
+	async changeImage(req, res, next) {
+		const t = await sequelize.transaction();
+		try {
+			const {
+				file: { filename },
+				params: { bookId },
+			} = req;
+			const [count, [updatedBooks]] = await Book.update(
+				{ image: filename },
+				{
+					where: {
+						id: bookId,
+					},
+					returning: ['id', 'title'],
+					raw: true,
+					fields: ['image'],
+					silent: true,
+					transaction: t,
+				}
+			);
+			console.log(count);
+			console.log(updatedBooks);
+			if (count > 0) {
+				console.log(
+					`Result is : ${JSON.stringify(updatedBooks, null, 2)}`
+				);
+				res.status(200).json(updatedBooks);
+			} else {
+				console.log('Book not found');
+				next(createError(404, 'Book not found'));
+			}
+			await t.commit();
+		} catch (error) {
+			console.log('Error is', error.message);
+			await t.rollback();
+			next(error);
 		}
 	}
 }
