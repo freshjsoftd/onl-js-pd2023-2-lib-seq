@@ -1,7 +1,10 @@
 const { Router } = require('express');
 // ============================
 const bookController = require('../controllers/bookController');
-const { validateBook } = require('../middleware/validate.mw');
+const {
+	validateBook,
+	validatePatchBook,
+} = require('../middleware/validate.mw');
 const {paginate, upload} = require('../middleware')
 // ============================
 
@@ -14,9 +17,10 @@ router
   .put(validateBook, bookController.updateBook);
 
 router
-  .route('/:bookId')
-  .get(bookController.getBookById)
-  .delete(bookController.deleteBook);
+	.route('/:bookId')
+	.get(bookController.getBookById)
+	.delete(bookController.deleteBook)
+	.patch(validatePatchBook, bookController.patchBook);
 
 router
 	.route('/:bookId/images')

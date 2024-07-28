@@ -42,16 +42,6 @@ class BookController {
 			const {
 				params: { bookId },
 			} = req;
-			/* const book = await db.query(
-				`SELECT books.id, books.title, gen.title as genre, shelf.title as shelves, books.description, to_char(books."createdAt"::timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "createdAt", to_char(books."updatedAt"::timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "updatedAt", image
-        FROM books 
-        JOIN genres as gen
-        ON books.genre_id = gen.id
-        JOIN shelves as shelf
-        ON books.shelf_id = shelf.id
-        WHERE books.id = $1`,
-				[bookId]
-			); */
 			const bookById = await Book.findByPk(bookId, {
 				attributes: {
 					exclude: ['createdAt', 'updatedAt'],
@@ -77,14 +67,38 @@ class BookController {
 	async createBook(req, res, next) {
 		const t = await sequelize.transaction();
 		try {
-			const body = req.body;
+			const { title, description, image, genre, shelf} = req.body;
 			/* const newBook = await db.query(
 				`INSERT INTO books (title, genre_id, shelf_id, description, "createdAt", "updatedAt", image)
         VALUES ($1, (SELECT id FROM genres WHERE title = $2), (SELECT id FROM shelves WHERE title = $3), $4, NOW(), NOW(), $5)
         RETURNING *;`,
 				[title, genre, shelves, description, image]
 			); */
-			const newBook = await Book.create(body, {
+			const genreId = await Genre.findOne({
+				where: {
+					title: genre,
+				},
+				attributes: ['id'],
+				raw: true,
+			})
+			console.log(genreId);
+
+			const shelfId = await Shelf.findOne({
+				where: {
+					title: shelf,
+				},
+				attributes: ['id'],
+				raw: true,
+			})
+			console.log(shelfId);
+
+			const { id: genre_id } = genreId;
+
+			const { id: shelf_id } = shelfId;
+
+			const newBody = { title, description, image, genre_id , shelf_id};
+			
+			const newBook = await Book.create(newBody, {
 				returning: ['id'],
 				transaction: t,
 			});
@@ -104,44 +118,91 @@ class BookController {
 		}
 	}
 
-	async updateBook(req, res) {
+	async updateBook(req, res, next) {
+		const t = await sequelize.transaction();
 		try {
-			const { title, genre, shelves, description, image, id } = req.body;
-			const updatedBook = await db.query(
-				`UPDATE books
-        SET title=$1, genre_id=(SELECT id FROM genres WHERE title = $2), shelf_id=(SELECT id FROM shelves WHERE title = $3), description=$4, "updatedAt"=NOW(), image=$5 WHERE id=$6 RETURNING *`,
-				[title, genre, shelves, description, image, id]
-			);
-
-			if (updatedBook.rows.length > 0) {
-				res.status(201).json(updatedBook.rows[0]);
+			const { body } = req;
+			const updatedBook = await Book.update(body, {
+				where: {
+					id: body.id,
+				},
+				transaction: t,
+				raw: true,
+				returning: ['title', 'shelf_id'],
+			});
+			if (updatedBook) {
+				console.log(
+					`Result is : ${JSON.stringify(updatedBook, null, 2)}`
+				);
+				res.status(201).json(updatedBook);
 			} else {
-				res.status(404).send('Book not found');
+				console.log('Book not found');
+				next(createError(404, 'Book not found'));
 			}
+			await t.commit();
 		} catch (error) {
-			console.log(error);
-			res.status(500).json({ error: 'Internal server error' });
+			console.log('Error is', error.message);
+			await t.rollback();
+			next(error);
 		}
 	}
 
-	async deleteBook(req, res) {
+	async deleteBook(req, res, next) {
+		const t = await sequelize.transaction();
 		try {
 			const {
 				params: { bookId },
 			} = req;
-			const delBook = await db.query(
-				`DELETE FROM books WHERE id=$1 RETURNING title, id`,
-				[bookId]
-			);
-
-			if (delBook.rows.length > 0) {
-				res.status(204).json(delBook.rows[0]);
+			const delBook = await Book.destroy({
+				where: {
+					id: bookId,
+				},
+				transaction: t,
+			});
+			if (delBook) {
+				console.log(res.statusCode, 'Book has been deleted');
+				res.sendStatus(res.statusCode);
 			} else {
-				res.status(404).send('Book not found');
+				console.log(res.statusCode);
+				next(createError(404, 'Book not found'));
 			}
+			await t.commit();
 		} catch (error) {
-			console.log(error);
-			res.status(500).json({ error: 'Internal server error' });
+			console.log('Error is', error.message);
+			await t.rollback();
+			next(error);
+		}
+	}
+
+	async patchBook(req, res, next) {
+		const t = await sequelize.transaction();
+		try {
+			const {
+				params: { bookId },
+				body,
+			} = req;
+			const [count, [updatedBooks]] = await Book.update(body, {
+				where: {
+					id: bookId,
+				},
+				transaction: t,
+				raw: true,
+				returning: ['title', 'genre_id'],
+			});
+			if (count > 0) {
+				console.log(
+					`Result is : ${JSON.stringify(updatedBooks, null, 2)}`
+				);
+				res.status(200).json(updatedBooks);
+			} else {
+				console.log('Book not found');
+				next(createError(404, 'Book not found'));
+			}
+			await t.commit();
+		} catch (error) {
+			console.log('Error is', error.message);
+			await t.rollback();
+			next(error);
 		}
 	}
 

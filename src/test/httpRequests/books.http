@@ -13,9 +13,9 @@ POST http://localhost:5000/api/books HTTP/1.1
 content-type: application/json
 
 {
-  "title": "Test book",
-  "genre_id": 2,
-  "shelf_id": 4,
+  "title": "Test book 1",
+  "genre": "Drama",
+  "shelf": "Shelf #6",
   "description": "New test book",
   "image": null
 }
@@ -23,15 +23,11 @@ content-type: application/json
 ###
 
 // Create book (With errors)
-POST http://localhost:5000/api/books HTTP/1.1
+PATCH http://localhost:5000/api/books/2 HTTP/1.1
 content-type: application/json
 
 {
-  "title": "T",
-  "genre": null,
-  "shelves": "",
-  "description": null,
-  "image": null
+  "title": "Harry Potter"
 }
 
 ###
@@ -42,8 +38,8 @@ content-type: application/json
 
 {
   "title": "Update book",
-  "genre": "Adventures",
-  "shelves": "Shelf #7",
+  "genre_id": 2,
+  "shelf_id": 3,
   "description": "Updated test book",
   "image": null,
   "id": 29
@@ -52,4 +48,4 @@ content-type: application/json
 ###
 
 // Delete book
-DELETE  http://localhost:5000/api/books/29 HTTP/1.1
+DELETE  http://localhost:5000/api/books/30 HTTP/1.1

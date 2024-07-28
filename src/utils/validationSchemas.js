@@ -33,10 +33,10 @@ const NEW_BOOK_VALIDATION_SCHEMA = yup.object().shape({
 });
 
 const PATCH_BOOK_VALIDATION_SCHEMA = yup.object().shape({
-  title: yup.string().trim().min(2).max(30),
-  genre_id: ID_SCHEMA,
-  shelf_id: ID_SCHEMA,
-  // image: yup.string().nullable(),
+	title: TITLE_NAME_SCHEMA,
+	genre_id: ID_SCHEMA,
+	shelf_id: ID_SCHEMA,
+	// image: yup.string().nullable(),
 });
 
 const PAGINATION_SCHEMA = yup.object().shape({
